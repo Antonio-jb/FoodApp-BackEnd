@@ -1,5 +1,7 @@
 package com.app.foodapp.services;
 
+import com.app.foodapp.dto.ApiDelivery;
+import com.app.foodapp.dto.LoginResponse;
 import com.app.foodapp.models.Roles;
 import com.app.foodapp.models.Users;
 import com.app.foodapp.repositories.RolesRepository;
@@ -98,14 +100,15 @@ public class UsersService {
         return this.usersRepository.save(newUser);
     }
 
-    public String login (String email, String password) {
+    public ApiDelivery login (String email, String password) {
 
         //Users optionalUser = this.usersRepository.findByEmail(email).orElseThrow(() ->
         //        new RuntimeException("El usuario no existe."));
 
         Optional<Users> optionalUser = this.usersRepository.findByEmail(email);
+
         if (optionalUser.isEmpty()) {
-            return "No existe";
+            return new ApiDelivery<>("User not found",false, 404, null, "not found" );
         }
         /*
          * usuario = {
@@ -118,10 +121,12 @@ public class UsersService {
          */
         Users user = optionalUser.get();
         if (!this.passwordEncoder.matches(password, user.getPassword())) {
-            return "Password incorrect";
+            return new ApiDelivery<>("Password incorrect",false, 401, null, "password incorrect" );
         }
         else {
-            return "Login successful";
+            String token = this.createToken(email);
+            LoginResponse login = new LoginResponse (user, token);
+            return new ApiDelivery<>("Login successful",true, 200, null, "Login Successful" );
         }
     }
 
