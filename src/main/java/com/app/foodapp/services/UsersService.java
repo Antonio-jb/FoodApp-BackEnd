@@ -126,7 +126,7 @@ public class UsersService {
         else {
             String token = this.createToken(email);
             LoginResponse login = new LoginResponse (user, token);
-            return new ApiDelivery<>("Login successful",true, 200, null, "Login Successful" );
+            return new ApiDelivery<>("Login successful",true, 200, login, "Login Successful" );
         }
     }
 
